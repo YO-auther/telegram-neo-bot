@@ -28,7 +28,9 @@ def show(message):
         text="🎭 Открыть шоу Нео", 
         web_app=WebAppInfo(url=WEBAPP_URL)
     ))
-    
+    for i in range(3):
+        bot.send_message(message.chat.id, f"Подготовка к шоу... {'.' * (i)}")
+        
     bot.send_message(
         message.chat.id,
         "ДАМЫ И ГОСПОДА!\n\n"
