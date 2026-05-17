@@ -1,11 +1,16 @@
 import telebot
 from telebot.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 import random
+import os
 
-bot = telebot.TeleBot('8702622701:AAHfa2dh4M57xKggQP7sOMMcKVKngk2xZ54')
+TOKEN = os.environ.get('8702622701:AAHfa2dh4M57xKggQP7sOMMcKVKngk2xZ54')
+if TOKEN is None:
+    print("Ошибка: TELEGRAM_TOKEN не задан!")
+    exit(1)
 
-# URL твоего Flask-приложения (замени на реальный при деплое)
-WEBAPP_URL = "https://dairy-stoning-hangout.ngrok-free.dev/show"
+bot = telebot.TeleBot(TOKEN)
+
+WEBAPP_URL = "https://neo-show.onrender.com/show"
 
 @bot.message_handler(commands=['start'])
 def start(message):
