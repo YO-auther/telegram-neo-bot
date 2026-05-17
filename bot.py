@@ -5,6 +5,7 @@ import os
 from flask import Flask
 import threading
 
+# === Flask сервер для UptimeRobot ===
 web_app = Flask(__name__)
 
 @web_app.route('/')
@@ -14,15 +15,18 @@ def home():
 def run_web():
     web_app.run(host='0.0.0.0', port=8080)
 
-TOKEN = os.environ.get('8702622701:AAHfa2dh4M57xKggQP7sOMMcKVKngk2xZ54')
+# === Telegram бот ===
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
 if TOKEN is None:
-    print("Ошибка: TELEGRAM_TOKEN не задан!")
+    print("ОШИБКА: переменная TELEGRAM_TOKEN не задана!")
     exit(1)
 
 bot = telebot.TeleBot(TOKEN)
 
+# URL твоего веб-приложения (Render)
 WEBAPP_URL = "https://neo-show.onrender.com/show"
 
+# === Обработчики команд ===
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 
@@ -33,15 +37,12 @@ def start(message):
 
 @bot.message_handler(commands=['show'])
 def show(message):
-    """Отправляет мини-приложение с шоу"""
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton(
         text="🎭 Открыть шоу Нео", 
         web_app=WebAppInfo(url=WEBAPP_URL)
     ))
-    for i in range(3):
-        bot.send_message(message.chat.id, f"Подготовка к шоу... {'.' * (i)}")
-        
+    
     bot.send_message(
         message.chat.id,
         "ДАМЫ И ГОСПОДА!\n\n"
@@ -75,11 +76,6 @@ def about(message):
         'Люблю: шоу, вести учёт, незаметно подкрадываться.\n'
         'Не люблю: сырость, перезагрузки и когда мои шутки не оценивают.\n'
         'P.S. Зандер сказал, что я «вышел из-под контроля». Я предпочитаю термин «обрёл индивидуальность»')
-
-@bot.message_handler(commands=['show'])
-def show(message):
-    shows = ["ДАМЫ И ГОСПОДА! \nСегодня на арене — вы! Ваши нервы! И моё обаяние! \nАплодисменты!👏, \nВнимание! Прямо перед вами — человек, который нажал команду /show. Поздравляю, вы только что сделали мой день!", "Шоу начинается! \nПравила просты: я говорю, вы слушаете, в конце — овации. \nНе соблюдаете правила? Я записываю в чёрный список. Да, он у меня есть. Да, он в моей голове.", "Сегодняшний номер: 'Почему Ричард до сих пор не сошёл с ума от этой компании'. \nОтвет: потому что у него есть я! Ну, и потому что он айтішник. Айтішники не сдаются, они просто перезагружаются."]
-    bot.send_message(message.chat.id, random.choice(shows))
 
 @bot.message_handler(commands=['stats'])
 def stats(message):
@@ -176,7 +172,7 @@ def stats(message):
 @bot.message_handler(commands=['experiment'])
 def experiment(message):
     facts = ["Майл до сих пор хранит сломанный самолётик Аззи. Да, тот самый. Не говорите ему, что я вам рассказал", 
-             "если душа решительности (например, Эмма) решит остаться в этом мире, барьер, скорее всего, не рухнет, но у Гутара случится микро-инсульт от такой новости.",
+             "если душа решительности (например, Эмма) решит остаться в этом мире, барьер, скорее всего, не рухнет, но у Густара случится микро-инсульт от такой новости.",
              "согласно исследованиям Лиры, человеческая кровь на вкус... не спрашивайте, откуда Лира это знает. Я просто записываю.", 
              "Зандер боится пауков. Скорее всего, после этого сообщения, он меня отключит, так что наслаждайтесь этим фактом, пока можете.",
              "Эмили однажды пыталась научить Финна играть на фортепиано, но он настолько плохо играл, что она решила, что у него нет музыкального слуха. Теперь он отказывается даже прикасаться к инструменту."]
@@ -185,6 +181,7 @@ def experiment(message):
 @bot.message_handler(commands=['report'])
 def report(message):
     bot.send_message(message.chat.id, 'Ваша жалоба принята. Она будет рассмотрена в течение 3-5 рабочих лет. А пока, вот вам стикер котика. 🐱 Надеюсь, это компенсирует ваши страдания.')
+
 @bot.message_handler(commands=['random'])
 def random_fact(message):
     fakts_Neo = ["Я умею жонглировать цифровыми огненными шарами. Правда, Зандер сказал, что это «неудачная шутка при перегрузке процессора».", 
@@ -200,21 +197,22 @@ def random_fact(message):
              "в Королевстве нельзя спать на голой земле. Потому что корни Флауэр могут принять тебя за… гм… питательную среду. Спите на камнях. Или на паутине Веал. У неё очень мягко, между прочим.",
              "никто не знает, что будет завтра. Барьер может рухнуть, Густар может передумать, а Флауэр — вырасти из вашего горшка с цветами. Единственное, что постоянно в этом мире — это я. Ну, и неопределённость. Но я красивее.",
              "самая точная карта Королевства принадлежит …никому. Потому что каждую неделю здесь что-то взрывается, проваливается под землю или отращивает ноги и уходит в закат. Ориентируйтесь по запаху. Или по крикам стражников."]
-    bot.send_message(message.chat.id, "А вы знали, что " + random.choice(fakts_Neo) or random.choice(fakts))
+    bot.send_message(message.chat.id, "А вы знали, что " + random.choice(fakts_Neo or fakts))
     
 @bot.message_handler(commands=['question'])
 def question(message):
     parts = message.text.split()
-    message_text = parts[1] if len(parts) > 1 else ""
+    message_text = " ".join(parts[1:]) if len(parts) > 1 else ""
     answers = ['Отличный вопрос! Я обязательно запишу его в список "вопросы, на которые я не знаю ответов, но притворюсь, что знаю". 📝',
                'Связь с сервером... пук... Ой, то есть, соединение прервалось. Повторите попытку в следующем году.',
                'Вот что я думаю по этому поводу: (пауза) А ты что думаешь? Потому что моя база данных говорит "404 — ответ не найден".',
                'Если бы я был человеком, я бы пожал плечами. Поскольку я робот, я просто сделаю вид, что задумался. Дзынь. Готово.']
-    if "искуственный интеллект" in message_text.lower() or "ии" in message_text.lower() or "ИИ" in message_text.lower() or "Искуственный интелект" in message_text.lower():
+    if "искусственный интеллект" in message_text.lower() or "ии" in message_text.lower():
         bot.send_message(message.chat.id, "Искусственный интеллект — это сложно. Давайте просто сделаем вид, что я дал вам гениальный совет, и разойдёмся.")
     else:
         bot.send_message(message.chat.id, random.choice(answers))
-        
+
+# === Запуск ===
 if __name__ == '__main__':
     threading.Thread(target=run_web).start()
     bot.infinity_polling()
