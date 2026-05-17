@@ -2,6 +2,17 @@ import telebot
 from telebot.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 import random
 import os
+from flask import Flask
+import threading
+
+web_app = Flask(__name__)
+
+@web_app.route('/')
+def home():
+    return "Neo Bot is alive! 🤖"
+
+def run_web():
+    web_app.run(host='0.0.0.0', port=8080)
 
 TOKEN = os.environ.get('8702622701:AAHfa2dh4M57xKggQP7sOMMcKVKngk2xZ54')
 if TOKEN is None:
@@ -205,4 +216,5 @@ def question(message):
         bot.send_message(message.chat.id, random.choice(answers))
         
 if __name__ == '__main__':
+    threading.Thread(target=run_web).start()
     bot.infinity_polling()
