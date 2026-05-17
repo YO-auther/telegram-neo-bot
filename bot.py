@@ -17,6 +17,7 @@ def run_web():
 
 # === Telegram бот ===
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
+print(f"Токен загружен: {TOKEN[:10]}...")  # покажет первые 10 символов
 if TOKEN is None:
     print("ОШИБКА: переменная TELEGRAM_TOKEN не задана!")
     exit(1)
